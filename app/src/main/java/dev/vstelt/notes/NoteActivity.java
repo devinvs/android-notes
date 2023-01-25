@@ -59,4 +59,11 @@ public class NoteActivity extends AppCompatActivity {
 
         MainActivity.notes.syncNote(noteId, title, content);
     }
+
+    public void onDelete(View view) {
+        MainActivity.notes.deleteNote(noteId);
+
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
 }

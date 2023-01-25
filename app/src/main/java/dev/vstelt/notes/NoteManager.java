@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,15 +36,11 @@ public class NoteManager extends RecyclerView.Adapter<NoteManager.ViewHolder> {
         for (File f: ctx.getFilesDir().listFiles()) {
             Log.d("NoteManager", "Reading File: " + f.getName());
             try {
-                List<String> lines = Files.readAllLines(f.toPath());
-                String title = lines.get(0);
-
-                StringBuffer content = new StringBuffer();
-                for (int i=1; i<lines.size(); i++) {
-                    content.append(lines.get(i));
-                    content.append('\n');
-                }
-                notes.add(new Note(f.getName(), f.lastModified(), title, content.toString()));
+                String s = new String(Files.readAllBytes(f.toPath()));
+                String[] parts = s.split("\n", 2);
+                String title = parts[0];
+                String content = parts[1];
+                notes.add(new Note(f.getName(), f.lastModified(), title, content));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -79,6 +74,11 @@ public class NoteManager extends RecyclerView.Adapter<NoteManager.ViewHolder> {
         }
 
         return f.lastModified();
+    }
+
+    public void deleteNote(String id) {
+        File f = new File(ctx.getFilesDir(), id);
+        f.delete();
     }
 
     public void syncNote(String id, String title, String content) {
